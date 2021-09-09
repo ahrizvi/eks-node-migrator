@@ -1,3 +1,3 @@
-class RollingUpdateException(Exception):
+class NodeMigratorException(Exception):
     def __init__(self, message):
         self.message = message

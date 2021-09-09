@@ -8,7 +8,7 @@ from .config import app_config
 from .lib.logger import logger
 from .lib.aws import get_asgs, get_ec2_pvt_dns
 from .lib.k8s import drain_node, cordon_node, get_bad_state_pods
-from .lib.exceptions import RollingUpdateException
+from .lib.exceptions import NodeMigratorException
 
 
 def get_k8s_nodes(filtered_asgs):
@@ -94,12 +94,6 @@ def main(args=None):
     if not kctl:
         logger.info('kubectl is required to be installed before proceeding')
         quit(1)
-
-    #cluster_name = "beta-spot-dev-sre-eks"
-    #nodegroup = "monitoring-ng-spot-1"
-    #action = "drain"
-
-    #filtered_asgs = get_asgs(args.cluster_name, args.nodegroup)
 
     filtered_asgs = get_asgs(args.cluster_name, args.nodegroup)
     bad_state_pods_init = get_bad_state_pods()
