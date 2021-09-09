@@ -52,7 +52,7 @@ def update_asgs_drain(node, timeout_s):
 
     except Exception as drain_exception:
         logger.info(drain_exception)
-        raise RollingUpdateException("Rolling update on ASG failed")
+        raise NodeMigratorException("Drain operation on node failed")
 
 
 def pod_health_check(init_state):
@@ -110,12 +110,12 @@ def main(args=None):
             for node in k8s_nodes_list:
                 update_asgs_cordon(node)
             logger.info(
-                '*** All nodes in provided ASG have been cordoned ! ***')
+                '*** All nodes in provided Nodegroups have been cordoned ! ***')
 
         except Exception as e:
             logger.error(e)
             logger.error(
-                '*** EKS node cordon operation of ASG has failed. Exiting ***')
+                '*** EKS node cordon operation of Nodegroup has failed. Exiting ***')
             sys.exit(1)
 
     elif args.action == "drain":
@@ -127,10 +127,10 @@ def main(args=None):
                         '*** Checking PODs health status before continuing with drain operations ! ***')
 
                     wait_until_resp = wait_until(
-                        pod_health_check(bad_state_pods_init), 30)
+                        pod_health_check(bad_state_pods_init), 90)
 
                     if wait_until_resp == True:
-                        update_asgs_drain(node, 15)
+                        update_asgs_drain(node, 60)
                         print(
                             "PODs in pending state after current node drain =   " + str(get_bad_state_pods()))
 
