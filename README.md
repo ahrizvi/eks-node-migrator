@@ -1,5 +1,5 @@
-<p align="center">
-  <img height="150px" src="./logo.png"  alt="EKS Node Migrator">
+<p align="left">
+  <img height="100px" src="./logo.png"  alt="EKS Node Migrator">
 </p>
 
 # EKS Node Migrator
