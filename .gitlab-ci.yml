@@ -1,6 +1,6 @@
 ---
 stages:
-  - test
+ # - test
   - release
   - build
 
@@ -10,12 +10,12 @@ variables:
   ECR_IMAGE: ${ECR_REGISTRY}/eks-node-migrator
   CI_IMAGE: ${ECR_REGISTRY}/ci-automation:v2.2.0
 
-test:
-   stage: test
-   image: ${CI_IMAGE}
-   script: make test
-   only:
-     - merge_requests
+#test:
+#   stage: test
+#   image: ${CI_IMAGE}
+#   script: make test
+#   only:
+#     - merge_requests
 
 semantic-release:
   tags:
