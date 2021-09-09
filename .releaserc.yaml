@@ -1,0 +1,9 @@
+---
+branch: master
+repositoryUrl: https://gitlab.sre.red/kubernetes/misc/eks-node-migrator
+plugins:
+    - "@semantic-release/commit-analyzer"
+    - "@semantic-release/release-notes-generator"
+    - "@semantic-release/git"
+    - - "@semantic-release/gitlab"
+
