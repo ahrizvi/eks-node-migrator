@@ -1,7 +1,3 @@
-<p align="center">
-  <img height="150px" src="./logo.png"  alt="EKS Rolling Update" title="EKS Rolling Update">
-</p>
-
 # EKS Node Migrator
 
 EKS Node Migrator is a utility to gracefully drain / cordon self-managed EKS nodes in an EKS cluster. 
