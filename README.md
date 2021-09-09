@@ -1,5 +1,5 @@
-<p align="center">
-  <img height="150px" src="./logo.png"  alt="EKS Node Migrator">
+<p align="left">
+  <img height="100px" src="./logo.png"  alt="EKS Node Migrator">
 </p>
 
 # EKS Node Migrator
@@ -32,6 +32,8 @@ To achieve this, it performs the following actions:
 * During the drain/cordon process, the tool keeps checking the cluster workload health (POD health), bad health for longer duration halts the process 
 * Ensures the ASGs are healthy and that the new nodes have joined the EKS cluster
 * The tool is designed to work on one nodegroup in the cluster at a time
+
+This tool is inspired by https://github.com/hellofresh/eks-rolling-update
 
 <a name="requirements"></a>
 ## Requirements
@@ -87,7 +89,10 @@ eks_node_migrator.py -c my-eks-cluster -ng monitoring -a drain
 
 | Environment Variable      | Description                                                                                                           | Default                                  |
 |---------------------------|-----------------------------------------------------------------------------------------------------------------------|------------------------------------------|
+| AWS_DEFAULT_REGION        | Default AWS Region to execute the script on                                                                           | eu-west-1                                |
 | BETWEEN_NODES_WAIT        | Number of seconds to wait after removing a node before continuing on                                                  | 0                                        |
+| K8S_CONTEXT               | Context from the Kubernetes config to use. If this is left undefined the current-context is used                      | None                                     |
+| K8S_PROXY_BYPASS          | Set to true to ignore HTTPS_PROXY and HTTP_PROXY and disable use of any configured proxy when talking to the K8S API  | False                                    |
 | EXTRA_DRAIN_ARGS          | Additional space-delimited args to supply to the `kubectl drain` function, e.g `--force=true`. See `kubectl drain -h` | ""                                       |
 
 
@@ -130,12 +135,14 @@ After building the image, run using the command
 ```bash
 docker run -ti --rm \
   -e AWS_DEFAULT_REGION \
+  -e AWS_PROFILE \
   -v "${HOME}/.aws:/root/.aws" \
   -v "${HOME}/.kube/config:/root/.kube/config" \
   eks-node-migrator:latest \
-  -c my-cluster
-  -ng my-worker-ng
-  -a cordon
+  -c beta-spot-dev-sre-eks \
+  -ng worker-ng-spot-1 \
+  -a drain
+
 ```
 
 Pass in any additional environment variables and options as described elsewhere in this file.

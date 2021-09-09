@@ -1,35 +1,52 @@
 from kubernetes import client, config
 from kubernetes.client.rest import ApiException
+import os
 import subprocess
 import time
 from .logger import logger
 from eksmigrator.config import app_config
 
+def ensure_config_loaded():
+
+    kube_config = os.getenv('KUBECONFIG')
+    if kube_config and os.path.isfile(kube_config):
+        try:
+            config.load_kube_config(context=app_config['K8S_CONTEXT'])
+        except config.ConfigException:
+            raise Exception("Could not configure kubernetes python client")
+    else:
+        try:
+            config.load_incluster_config()
+        except config.ConfigException:
+            try:
+                config.load_kube_config(context=app_config['K8S_CONTEXT'])
+            except config.ConfigException:
+                raise Exception("Could not configure kubernetes python client")
+
+    proxy_url = os.getenv('HTTPS_PROXY', os.getenv('HTTP_PROXY', None))
+    if proxy_url and not app_config['K8S_PROXY_BYPASS']:
+        logger.info(f"Setting proxy: {proxy_url}")
+        client.Configuration._default.proxy = proxy_url
 
 def cordon_node(node_name):
     """
     Cordon a kubernetes node to avoid new pods being scheduled on it
     """
-    try:
-        config.load_kube_config()
-    except config.ConfigException:
-        raise Exception("Could not configure kubernetes python client")
 
-    configuration = client.Configuration()
+    ensure_config_loaded()
+
     # create an instance of the API class
-    k8s_api = client.CoreV1Api(client.ApiClient(configuration))
+    k8s_api = client.CoreV1Api()
     logger.info("Cordoning k8s node {}...".format(node_name))
     try:
-        api_call_body = client.V1Node(
-            spec=client.V1NodeSpec(unschedulable=True))
+        api_call_body = client.V1Node(spec=client.V1NodeSpec(unschedulable=True))
         if not app_config['DRY_RUN']:
             k8s_api.patch_node(node_name, api_call_body)
         else:
             k8s_api.patch_node(node_name, api_call_body, dry_run=True)
         logger.info("Node cordoned")
     except ApiException as e:
-        logger.info(
-            "Exception when calling CoreV1Api->patch_node: {}".format(e))
+        logger.info("Exception when calling CoreV1Api->patch_node: {}".format(e))
 
 
 def drain_node(node_name, timeout_s):

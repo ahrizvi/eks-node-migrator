@@ -1,0 +1,49 @@
+---
+stages:
+  # - test
+  - release
+  - build
+
+variables:
+  AWS_REGION: eu-west-1
+  ECR_REGISTRY: 945202316273.dkr.ecr.eu-west-1.amazonaws.com
+  ECR_IMAGE: ${ECR_REGISTRY}/eks-node-migrator
+  # CI_IMAGE: ${ECR_REGISTRY}/ci-automation:v2.2.0
+
+# test:
+#   stage: test
+#   image: ${CI_IMAGE}
+#   script: make test
+#   only:
+#     - merge_requests
+
+semantic-release:
+  tags:
+    - sre-runner
+  stage: release
+  image: ${ECR_REGISTRY}/semantic-release:latest
+  script: semantic-release
+  only:
+    - master
+
+build:
+  tags:
+    - sre-runner
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:debug-v0.24.0
+    entrypoint: [""]
+  script:
+    - echo "{\"credHelpers\":{\"$ECR_REGISTRY\":\"ecr-login\"}}"
+      > /kaniko/.docker/config.json
+    - /kaniko/executor
+      --context $CI_PROJECT_DIR
+      --dockerfile $CI_PROJECT_DIR/Dockerfile
+      --build-arg VERSION=${CI_COMMIT_TAG}
+      --destination ${ECR_IMAGE}:${CI_COMMIT_SHA}
+      --destination ${ECR_IMAGE}:${CI_COMMIT_TAG}
+      --destination ${ECR_IMAGE}:latest
+  only:
+    - tags
+  except:
+    - branches

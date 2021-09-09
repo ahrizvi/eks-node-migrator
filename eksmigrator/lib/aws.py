@@ -2,10 +2,12 @@ import boto3
 from .logger import logger
 from eksmigrator.config import app_config
 
+aws_reg = app_config['AWS_DEFAULT_REGION']
+
 # Set AWS Profile and region for script execution
-boto3.setup_default_session(profile_name=app_config['AWS_PROFILE'])
-client = boto3.client('autoscaling', region_name=app_config['AWS_REGION'])
-ec2_client = boto3.client('ec2', region_name=app_config['AWS_REGION'])
+#boto3.setup_default_session(profile_name="kube-dev-sre")
+client = boto3.client('autoscaling', region_name=aws_reg)
+ec2_client = boto3.client('ec2', region_name=aws_reg)
 
 
 def get_asgs(cluster_name, nodegroup):

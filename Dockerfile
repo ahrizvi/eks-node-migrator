@@ -20,7 +20,7 @@ RUN pip3 install --no-cache-dir \
         awscli \
         /tmp/*.whl && \
         rm -rf /tmp/* && \
-  AWS_DEFAULT_REGION=eu-west-1 eks_spot_migrator.py -h
+  AWS_DEFAULT_REGION=eu-west-1 eks_node_migrator.py -h
 
 WORKDIR /app
 ENTRYPOINT ["eks_node_migrator.py"]

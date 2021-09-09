@@ -136,7 +136,7 @@ def main(args=None):
                     pod_health_check(bad_state_pods_init), 30)
 
                 if wait_until_resp == True:
-                    update_asgs_drain(node, 15)
+                    update_asgs_drain(node, 90)
                     print(
                         "PODs in pending state after current node drain =   " + str(get_bad_state_pods()))
 
