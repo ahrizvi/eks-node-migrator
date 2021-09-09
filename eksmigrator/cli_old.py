@@ -52,11 +52,9 @@ def update_asgs_drain(node, timeout_s):
 
     except Exception as drain_exception:
         logger.info(drain_exception)
-        raise NodeMigratorException(
-            "Rolling drain operation on Nodegroup has failed")
+        raise NodeMigratorException("Drain operation on node failed")
 
 
-# wait for something to be ready
 def pod_health_check(init_state):
     current_bad_pods = get_bad_state_pods()
     if current_bad_pods >= init_state:
@@ -106,67 +104,44 @@ def main(args=None):
 
     # perform real update
 
-    if args.action == "cordon" and int(len(k8s_nodes_list)) != 0:
+    if args.action == "cordon":
 
         try:
-            logger.info(args.action + " operation will be peformed on " +
-                        str(len(k8s_nodes_list)) + " nodes")
-
             for node in k8s_nodes_list:
                 update_asgs_cordon(node)
             logger.info(
-                '*** All nodes in provided Nodegroup have been cordoned ! ***')
+                '*** All nodes in provided Nodegroups have been cordoned ! ***')
 
         except Exception as e:
             logger.error(e)
             logger.error(
-                '*** EKS node cordon operation of provided Nodegroup has failed. Exiting ***')
+                '*** EKS node cordon operation of Nodegroup has failed. Exiting ***')
             sys.exit(1)
 
-    elif args.action == "drain" and int(len(k8s_nodes_list)) != 0:
+    elif args.action == "drain":
 
         try:
-            logger.info(args.action + " operation will be peformed on " +
-                        str(len(k8s_nodes_list)) + " nodes")
-            for node in k8s_nodes_list:
+            if args.action == "drain":
+                for node in k8s_nodes_list:
+                    logger.info(
+                        '*** Checking PODs health status before continuing with drain operations ! ***')
+
+                    wait_until_resp = wait_until(
+                        pod_health_check(bad_state_pods_init), 30)
+
+                    if wait_until_resp == True:
+                        update_asgs_drain(node, 15)
+                        print(
+                            "PODs in pending state after current node drain =   " + str(get_bad_state_pods()))
+
+                    else:
+                        "Node drain operation can not be continued as PODs from already drained nodes have not transitioned to running state for much time"
+
                 logger.info(
-                    '*** Checking PODs health status before continuing with drain operations ! ***')
-
-                wait_until_resp = wait_until(
-                    pod_health_check(bad_state_pods_init), 30)
-
-                if wait_until_resp == True:
-                    update_asgs_drain(node, 15)
-                    print(
-                        "PODs in pending state after current node drain =   " + str(get_bad_state_pods()))
-
-                else:
-                    "Node drain operation can not be continued as PODs from already drained nodes have not transitioned to running state for longer time"
-
-            logger.info(
-                '*** All nodes in provided Nodegroup and cluster have been drained ! ***')
+                    '*** All nodes in provided Nodegroup and cluster have been drained ! ***')
 
         except Exception as e:
             logger.error(e)
             logger.error(
                 '*** EKS node drain operation has failed. Exiting ***')
-            sys.exit(1)
-
-    else:
-        try:
-            if int(len(k8s_nodes_list)) == 0:
-                raise Exception(
-                    "The cluster name or Nodegroup name is incorrect")
-
-        except Exception as e:
-            logger.error(e)
-            sys.exit(1)
-
-        try:
-            if args.action != 'drain' or args.action != 'cordon':
-                raise Exception(
-                    "Please choose a valid operation to be performed on cluster Nodegroup")
-
-        except Exception as e:
-            logger.error(e)
             sys.exit(1)

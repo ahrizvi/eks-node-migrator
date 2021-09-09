@@ -10,6 +10,7 @@ def cordon_node(node_name):
     """
     Cordon a kubernetes node to avoid new pods being scheduled on it
     """
+
     try:
         config.load_kube_config()
     except config.ConfigException:
@@ -43,41 +44,39 @@ def drain_node(node_name, timeout_s):
         '--ignore-daemonsets',
         '--delete-emptydir-data'
     ]
+    
+    #kubectl_args += app_config['EXTRA_DRAIN_ARGS']
 
-    kubectl_args += app_config['EXTRA_DRAIN_ARGS']
+    #if app_config['DRY_RUN'] is True:
+    #    kubectl_args += ['--dry-run']
 
-    if app_config['DRY_RUN'] is True:
-        kubectl_args += ['--dry-run']
 
-    logger.info('Draining worker node with {}...'.format(
-        ' '.join(kubectl_args)))
-    process = subprocess.Popen(
-        kubectl_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+    logger.info('Draining worker node with {}...'.format(' '.join(kubectl_args)))    
+    process = subprocess.Popen(kubectl_args,stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)
     timeout = timeout_s
     mustend = time.time() + timeout
-
-    while True and time.time() < mustend:
+        
+    while True and time.time() < mustend :
         output = process.stdout.readline()
         error = process.stderr.readline()
         if process.poll() is not None and output == '':
             break
         if output:
-            print(output.strip())
+            print (output.strip())
         if error:
-            print(error.strip())
-
-    #print("Node could not be drained properly, Exiting...")
+            print (error.strip())
+    
+    #print("Node could not be drained properly, Exiting...")        
     else:
         print(error)
-
+        
     #retval = process.poll()
     rc = process.returncode
 
-    # If process.returncode is non-zero, raise a CalledProcessError.
+    #If process.returncode is non-zero, raise a CalledProcessError.
     if rc != 0:
-        # print(error)
+        #print(error)
         raise Exception("Node can not be drained properly. Exiting")
-
 
 def get_bad_state_pods():
 
@@ -86,6 +85,8 @@ def get_bad_state_pods():
     except config.ConfigException:
         raise Exception("Could not configure kubernetes python client")
 
+    configuration = client.Configuration()
+    # create an instance of the API class
     v1 = client.CoreV1Api()
 
     api_response = v1.list_pod_for_all_namespaces(watch=False)
