@@ -1,0 +1,12 @@
+venv
+.DS_Store
+*.pyc
+.vscode
+.env
+.coverage
+.idea/
+.eggs/
+build/
+dist/
+*.egg-info/
+
