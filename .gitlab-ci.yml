@@ -7,9 +7,10 @@ stages:
 variables:
   AWS_REGION: eu-west-1
   ECR_REGISTRY: 945202316273.dkr.ecr.eu-west-1.amazonaws.com
-  ECR_IMAGE: 848569320300.dkr.ecr.eu-west-1.amazonaws.com/eks-node-migrator
+  ECR_IMAGE: ${ECR_REGISTRY}/eks-node-migrator
   #CI_IMAGE: ${ECR_REGISTRY}/ci-automation:v2.2.0
 
+  #848569320300.dkr.ecr.eu-west-1.amazonaws.com/eks-node-migrator
 #test:
 #   stage: test
 #   image: ${CI_IMAGE}
@@ -40,9 +41,9 @@ build:
       --context $CI_PROJECT_DIR
       --dockerfile $CI_PROJECT_DIR/Dockerfile
       --build-arg VERSION=${CI_COMMIT_TAG}
-      --destination ${ECR_IMAGE}:${CI_COMMIT_SHA}
-      --destination ${ECR_IMAGE}:${CI_COMMIT_TAG}
-      --destination ${ECR_IMAGE}:latest
+      --destination 848569320300.dkr.ecr.eu-west-1.amazonaws.com/eks-node-migrator:${CI_COMMIT_SHA}
+      --destination 848569320300.dkr.ecr.eu-west-1.amazonaws.com/eks-node-migrator:${CI_COMMIT_TAG}
+      --destination 848569320300.dkr.ecr.eu-west-1.amazonaws.com/eks-node-migrator:latest
   only:
     - tags
   except:
