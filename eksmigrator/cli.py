@@ -82,7 +82,7 @@ def main(args=None):
     parser = argparse.ArgumentParser(
         description='The tool to perform eks node drain/cordon ops')
     parser.add_argument('--cluster_name', '-c', required=True,
-                        help='the cluster name to perform drain/cordon operation on')
+                        help='the cluster name to perform drain or cordon operation on')
     parser.add_argument('--nodegroup', '-ng', required=True,
                         help='the nodegroup name to perform drain/cordonupdate on')
     parser.add_argument('--action', '-a', required=True,
@@ -170,3 +170,4 @@ def main(args=None):
         except Exception as e:
             logger.error(e)
             sys.exit(1)
+
