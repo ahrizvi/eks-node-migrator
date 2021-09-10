@@ -1,5 +1,5 @@
 <p align="left">
-  <img height="100px" src="./logo.png"  alt="EKS Node Migrator">
+  <img height="100px" src="https://raw.githubusercontent.com/ahrizvi/eks-node-migrator/main/logo.png"  alt="EKS Node Migrator">
 </p>
 
 # EKS Node Migrator
@@ -44,6 +44,24 @@ This tool is inspired by https://github.com/hellofresh/eks-rolling-update
 
 <a name="installation"></a>
 ## Installation
+
+### From PyPi
+```
+$ mkdir ~/apps
+$ mkdir ~/apps/eks-node-migrator
+$ cd ~/apps/eks-node-migrator
+$ virtualenv .env
+$ source .env/bin/activate
+(.env)$ pip install eks-node-migrator
+
+$ cd /usr/local/bin
+$ sudo ln -s ~/apps/myutil/.env/bin/eks_node_migrator.py
+```
+```
+virtualenv -p python3 venv
+source venv/bin/activate
+pip3 install -r requirements.txt
+```
 
 ### From source
 
