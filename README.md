@@ -57,11 +57,6 @@ $ source .env/bin/activate
 $ cd /usr/local/bin
 $ sudo ln -s ~/apps/myutil/.env/bin/eks_node_migrator.py
 ```
-```
-virtualenv -p python3 venv
-source venv/bin/activate
-pip3 install -r requirements.txt
-```
 
 ### From source
 
