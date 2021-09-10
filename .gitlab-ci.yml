@@ -1,27 +1,28 @@
 ---
 stages:
-  - test
+ # - test
   - release
   - build
 
 variables:
   AWS_REGION: eu-west-1
-  ECR_REGISTRY: 945202316273.dkr.ecr.eu-west-1.amazonaws.com
+  ECR_REGISTRY_SR: 945202316273.dkr.ecr.eu-west-1.amazonaws.com
+  ECR_REGISTRY: 848569320300.dkr.ecr.eu-west-1.amazonaws.com
   ECR_IMAGE: ${ECR_REGISTRY}/eks-node-migrator
   CI_IMAGE: ${ECR_REGISTRY}/ci-automation:v2.2.0
 
-test:
-   stage: test
-   image: ${CI_IMAGE}
-   script: make test
-   only:
-     - merge_requests
+#test:
+#   stage: test
+#   image: ${CI_IMAGE}
+#   script: make test
+#   only:
+#     - merge_requests
 
 semantic-release:
   tags:
     - sre-runner
   stage: release
-  image: ${ECR_REGISTRY}/semantic-release:latest
+  image: ${ECR_REGISTRY_SR}/semantic-release:latest
   script: semantic-release
   only:
     - master
