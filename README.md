@@ -45,12 +45,6 @@ This tool is inspired by https://github.com/hellofresh/eks-rolling-update
 <a name="installation"></a>
 ## Installation
 
-### From PyPi
-
-```
-pip3 install eks-node-migrator
-```
-
 ### From source
 
 ```
