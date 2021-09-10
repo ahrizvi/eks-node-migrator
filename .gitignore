@@ -4,6 +4,7 @@ venv
 .vscode
 .env
 .coverage
+._version.py
 .idea/
 .eggs/
 build/
